@@ -1,7 +1,6 @@
+MPICXX=mpic++
 DEBUG=yes
-EXEC=pi
 CXXFLAGS=--std=c++11 -fopenmp
-LDFLAGS=-fopenmp
 ifeq (${DEBUG},yes)
 	#debug
 	CXXFLAGS+=-O0 -g
@@ -10,23 +9,23 @@ else
 	CXXFLAGS+=-O2
 endif
 
-SRC= $(wildcard *.cpp)
-OBJ= $(SRC:.cpp=.o)
+COMMON_SOURCES=
+COMMON_OBJECTS= $(COMMON_SOURCES:.cpp=.o)
 
-all: $(EXEC)
+all: pi pi-mpi
 ifeq ($(DEBUG),no)
 	rm -rf *.o
 endif
 
-$(EXEC): $(OBJ)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+pi: calculPi.cpp $(COMMON_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $< $(COMMON_OBJECTS)
+
+pi-mpi: calculPi_mpi.cpp $(COMMON_OBJECTS)
+	$(MPICXX) $(CXXFLAGS) -o $@ $< $(COMMON_OBJECTS)
 
 
 .PHONY: clean mrproper
 
 clean:
-	rm -rf *.o
-
-mrproper: clean
-	rm -rf $(EXEC)
+	-rm pi pi-mpi $(COMMON_OBJECTS)
 
