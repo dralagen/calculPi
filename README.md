@@ -17,6 +17,10 @@ make
 ```
 
 ## launch with mpi
+
+Replace the value of `OMP_NUM_THREADS` by the number of cores on your processor.
+Normally the option -x is optional 
 ```
-mpirun -H host1,host2,host3 -n 3 ./pi-mpi
+export OMP_NUM_THREADS=4 
+mpirun -H host1,host2,host3 -n 3 -x OMP_NUM_THREADS ./pi-mpi
 ```
