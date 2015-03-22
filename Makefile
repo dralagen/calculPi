@@ -1,5 +1,5 @@
 MPICXX=mpic++
-DEBUG=yes
+DEBUG=no
 CXXFLAGS=--std=c++11 -fopenmp
 ifeq (${DEBUG},yes)
 	#debug
@@ -13,9 +13,6 @@ COMMON_SOURCES=
 COMMON_OBJECTS= $(COMMON_SOURCES:.cpp=.o)
 
 all: pi pi-mpi
-ifeq ($(DEBUG),no)
-	rm -rf *.o
-endif
 
 pi: calculPi.cpp $(COMMON_OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(COMMON_OBJECTS)
