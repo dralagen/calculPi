@@ -7,20 +7,12 @@
 
 using namespace std;
 
-int str2int(const char* str) {
-    int value;
-
-    istringstream(str) >> value;
-
-    return value;
-}
-
 int main(int argc, char** argv) {
 
     cout.precision(15);
 
     int rank,numprocs;
-    int n = 0;
+    unsigned long int n = 0;
     double gsum = 0.0;
 
     char processor_name[MPI_MAX_PROCESSOR_NAME];
@@ -32,7 +24,7 @@ int main(int argc, char** argv) {
 
     if (rank == 0) {
         if (argc == 2) {
-            n = str2int(argv[1]);
+            n = std::strtoul(argv[1], NULL, 0);
         }
         else {
             cout << "number of slice : ";
@@ -41,14 +33,15 @@ int main(int argc, char** argv) {
     }
 
 
-    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&n, 1, MPI::UNSIGNED_LONG, 0, MPI_COMM_WORLD);
 
     double lsum = 0.0;
-    int startI = rank*n/numprocs;
-    int finishI = (rank+1)*n/numprocs;
+    // keep parentheses to no overflow
+    unsigned long int startI = rank*(n/numprocs);
+    unsigned long int finishI = (rank+1)*(n/numprocs);
 
 #pragma omp parallel for reduction(+:lsum) default(shared)
-    for (int i = startI; i < finishI ; ++i) {
+    for (unsigned long int i = startI; i < finishI ; ++i) {
         double x = (double)i*(1.0/(double)n)+1.0/(double)n/2.0;
         lsum += 4.0/(1.0+x*x);
     }
